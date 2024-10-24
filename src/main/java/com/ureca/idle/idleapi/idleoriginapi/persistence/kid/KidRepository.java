@@ -17,8 +17,5 @@ public interface KidRepository extends JpaRepository<Kid, Long> {
     Optional<Kid> findKidWithPersonalityById(@Param("id") Long id);
     Optional<Kid> getKidById(Long id);
 
-
-
-
 }
 

@@ -1,8 +1,8 @@
 package com.ureca.idle.idleapi.idleoriginapi.implementation.mapper;
 
 import com.ureca.idle.idleapi.idleoriginapi.business.kid.dto.*;
-import com.ureca.idle.idleapi.idleoriginapi.business.kid.dto.UpdateKidPersonalityReq;
 import com.ureca.idle.idleapi.idleoriginapi.business.kid.dto.UpdateKidPersonalityResp;
+import com.ureca.idle.idleapi.idleoriginapi.business.kid.kidsPersonalityDeleteHistory.dto.PutKidsPersonalityToDeleteHistoryResp;
 import com.ureca.idle.idlejpa.kid.Kid;
 import com.ureca.idle.idlejpa.kidspersonality.KidsPersonality;
 import org.springframework.stereotype.Component;
@@ -39,5 +39,9 @@ public class KidDtoMapper {
     public UpdateKidPersonalityResp toUpdateKidPersonality() {
         return new UpdateKidPersonalityResp("성공적으로 성향이 등록되었습니다.");
 
+    }
+
+    public PutKidsPersonalityToDeleteHistoryResp toDeleteKidsPersonality() {
+        return new PutKidsPersonalityToDeleteHistoryResp("성공적으로 성향이 삭제되었습니다.");
     }
 }

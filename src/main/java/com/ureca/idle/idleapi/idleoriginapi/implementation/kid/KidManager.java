@@ -5,11 +5,13 @@ import com.ureca.idle.idleapi.idleoriginapi.business.kid.dto.UpdateKidPersonalit
 import com.ureca.idle.idleapi.idleoriginapi.implementation.util.MBTI;
 import com.ureca.idle.idleapi.idleoriginapi.implementation.util.MBTIUtil;
 import com.ureca.idle.idleapi.idleoriginapi.persistence.kid.KidRepository;
+import com.ureca.idle.idleapi.idleoriginapi.persistence.kid.KidsPersonalityDeleteHistoryRepository;
 import com.ureca.idle.idleapi.idleoriginapi.persistence.kid.KidsPersonalityRepository;
 import com.ureca.idle.idlejpa.bookscharacteristic.BooksCharacteristic;
 import com.ureca.idle.idlejpa.kid.Gender;
 import com.ureca.idle.idlejpa.kid.Kid;
 import com.ureca.idle.idlejpa.kidspersonality.KidsPersonality;
+import com.ureca.idle.idlejpa.kidspersonality.KidsPersonalityDeleteHistory;
 import com.ureca.idle.idlejpa.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -25,8 +27,10 @@ public class KidManager {
     private final KidRepository repository;
     private final KidsPersonalityRepository kidsPersonalityRepository;
     private final MBTIUtil mbtiUtil;
+    private final KidsPersonalityDeleteHistoryRepository kidsPersonalityDeleteHistory;
 
     public Kid registerKid(User user, AddKidReq req, KidsPersonality newKidsPersonality) {
+
         Kid newKid = Kid.builder()
                 .user(user)
                 .personality(newKidsPersonality)
@@ -46,10 +50,6 @@ public class KidManager {
                 .orElseThrow(() -> new KidException(KidExceptionType.NOT_FOUND_EXCEPTION));
     }
 
-    public Kid getKid(Long id) {
-        return repository.getKidById(id)
-                .orElseThrow(() -> new KidException(KidExceptionType.NOT_FOUND_EXCEPTION));
-    }
 
     public void checkDuplicatedKidName(User user, String name) {
         if(repository.existsByUserAndName(user, name)) {
@@ -57,7 +57,6 @@ public class KidManager {
         }
     }
 
-    // 아이의 personality에 MBTI 결과를 넣어주는 메소드
     public void updateKidPersonality(Long kidId, UpdateKidPersonalityReq req) {
         KidsPersonality kidPersonality = repository.findKidWithPersonalityById(kidId)
                 .orElseThrow(() -> new KidException(KidExceptionType.NOT_FOUND_EXCEPTION)).getPersonality();
@@ -74,6 +73,37 @@ public class KidManager {
                 .mbti(randomMBTI.mbti())
                 .build();
         return kidsPersonalityRepository.save(randomKidsPersonality);
+    }
+
+    public KidsPersonality generateRandomKidsPersonality(Long kidId) {
+        MBTI randomMBTI = mbtiUtil.generateRandomMBTI();
+        KidsPersonality randomKidsPersonality = KidsPersonality.builder()
+                .ei(randomMBTI.ei())
+                .sn(randomMBTI.sn())
+                .tf(randomMBTI.tf())
+                .jp(randomMBTI.jp())
+                .mbti(randomMBTI.mbti())
+                .build();
+        return kidsPersonalityRepository.save(randomKidsPersonality);
+    }
+
+    public KidsPersonalityDeleteHistory putKidPersonalityIntoDeleteHistory(Long kidId, KidsPersonality kidsPersonality) {
+        KidsPersonalityDeleteHistory newDeletePersonality = KidsPersonalityDeleteHistory.builder()
+                .kidsId(kidId)
+                .ei(kidsPersonality.getEi())
+                .sn(kidsPersonality.getSn())
+                .tf(kidsPersonality.getTf())
+                .jp(kidsPersonality.getJp())
+                .mbti(kidsPersonality.getMbti())
+                .build();
+        return kidsPersonalityDeleteHistory.save(newDeletePersonality);
+    }
+
+    public void updateRandomKidPersonality(Long kidId) {
+        KidsPersonality kidPersonality = repository.findKidWithPersonalityById(kidId)
+                .orElseThrow(() -> new KidException(KidExceptionType.NOT_FOUND_EXCEPTION)).getPersonality();
+        MBTI randomMBTI = mbtiUtil.generateRandomMBTI();
+        kidPersonality.updateKidsPersonality(randomMBTI.ei(), randomMBTI.sn(), randomMBTI.tf(), randomMBTI.jp(), randomMBTI.mbti(), false);
     }
 
 }

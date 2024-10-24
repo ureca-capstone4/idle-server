@@ -2,6 +2,8 @@ package com.ureca.idle.idleapi.idleoriginapi.presentation.controller.kid;
 
 import com.ureca.idle.idleapi.idleoriginapi.business.kid.KidManagingUseCase;
 import com.ureca.idle.idleapi.idleoriginapi.business.kid.dto.*;
+import com.ureca.idle.idleapi.idleoriginapi.business.kid.kidsPersonalityDeleteHistory.KidsPersonalityDeleteHistoryUseCase;
+import com.ureca.idle.idleapi.idleoriginapi.business.kid.kidsPersonalityDeleteHistory.dto.PutKidsPersonalityToDeleteHistoryResp;
 import com.ureca.idle.idleapi.idleoriginapi.presentation.web.auth.LoginUser;
 import com.ureca.idle.idleapi.idleoriginapi.presentation.web.auth.IdAndAuthority;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 public class KidManagingController {
 
     private final KidManagingUseCase kidManagingUseCase;
+    private final KidsPersonalityDeleteHistoryUseCase kidsPersonalityDeleteHistoryUseCase;
 
     @PostMapping("")
     public ResponseEntity<AddKidResp> addMyKid(@LoginUser IdAndAuthority loginUser, @RequestBody AddKidReq req) {
@@ -41,6 +44,15 @@ public class KidManagingController {
         UpdateKidPersonalityResp resp = kidManagingUseCase.updateKidsPersonality(kidId, req);
         return ResponseEntity.ok(resp);
     }
+
+    @PutMapping("/{kidId}/personalities")
+//    public ResponseEntity<DeleteKidsPersonalityResp> deleteKidsPersonalities(@LoginUser IdAndAuthority loginUser, @PathVariable Long kidId, @RequestBody UpdateKidPersonalityReq req) {
+    public ResponseEntity<PutKidsPersonalityToDeleteHistoryResp> deleteKidsPersonalities(@PathVariable Long kidId) {
+        PutKidsPersonalityToDeleteHistoryResp resp = kidsPersonalityDeleteHistoryUseCase.putKidsPersonalityToDeleteHistory(kidId);
+        return ResponseEntity.ok(resp);
+    }
+
+
 
 }
 
